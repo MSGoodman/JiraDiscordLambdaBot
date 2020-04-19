@@ -8,6 +8,7 @@ ISSUE_LINK_CREATED = """ Copy the raw json sent from Jira here """
 COMMENT_CREATED = """ Copy the raw json sent from Jira here """
 COMMENT_UPDATED = """ Copy the raw json sent from Jira here """
 COMMENT_DELETED = """ Copy the raw json sent from Jira here """
+ATTACHMENT_CREATED = """ Copy the raw json sent from Jira here """
 
 ACTUALLY_HIT_DISCORD = True
 
@@ -39,5 +40,9 @@ def test_lambda_comment_deleted():
 
 def test_lambda_status_changed():
     lambda_function.lambda_handler(json_string_to_obj(ISSUE_STATUS_CHANGED))
+    x = 0
+
+def test_lambda_attachment_created():
+    lambda_function.lambda_handler(json_string_to_obj(ATTACHMENT_CREATED))
     x = 0
 

@@ -12,6 +12,7 @@ class JiraEvent:
         self.comment = None
         self.ticket = None
         self.changelog = None
+        self.attachment = None
 
         self.__populate_conditional_fields()
 
@@ -38,17 +39,24 @@ class JiraEvent:
     def get_actor(self):
         if self.user:
             return self.user
-        if self.comment:
+        elif self.comment:
             return self.comment.update_author
         elif self.ticket:
             return self.ticket.assignee
+        elif self.attachment:
+            return self.attachment.author
 
     def title(self):
-        return f'{self.ticket.key}: {self.ticket.name}'
+        if self.ticket:
+            return f'{self.ticket.key}: {self.ticket.name}'
+        if self.attachment:
+            return f'{self.attachment.filename}'
 
     def url(self):
         if self.target in ['Issue', 'Comment']:
             return f'{CONFIG["jiraRootUrl"]}{self.ticket.key}'
+        if self.target == 'Attachment':
+            return self.attachment.content_url
         else:
             return ''
 
@@ -70,6 +78,12 @@ class JiraEvent:
     def change_details(self):
         return f'{self.target} {self.verb} by {self.get_actor().name}'
 
+    def image_url(self):
+        if self.attachment:
+            return self.attachment.thumbnail_url
+        else:
+            return None
+
     def __populate_conditional_fields(self):
         if 'issue' in self.raw_data:
             self.ticket = JiraTicket(self.raw_data['issue'])
@@ -79,6 +93,8 @@ class JiraEvent:
             self.changelog = JiraChangelog(self.raw_data['changelog'])
         if 'user' in self.raw_data:
             self.user = JiraUser(self.raw_data['user'])
+        if 'attachment' in self.raw_data:
+            self.attachment = JiraAttachment(self.raw_data['attachment'])
 
 
 class JiraChangelog:
@@ -112,3 +128,12 @@ class JiraUser:
     def __init__(self, user_json):
         self.raw_data = user_json
         self.name = user_json['displayName']
+
+
+class JiraAttachment:
+    def __init__(self, attachment_json):
+        self.raw_data = attachment_json
+        self.filename = attachment_json['filename']
+        self.author = JiraUser(attachment_json['author'])
+        self.content_url = attachment_json['content']
+        self.thumbnail_url = attachment_json['thumbnail']

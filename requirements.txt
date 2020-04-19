@@ -1,3 +1,2 @@
 urllib3
-requests==2.23.0
 # pytest==5.4.1 # Uncomment this if you want to run tests
