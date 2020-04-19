@@ -5,12 +5,19 @@ from discord import Payload
 from jira import JiraEvent
 from settings import CONFIG
 
-
 def lambda_handler(event):
     http = urllib3.PoolManager()
     e = JiraEvent(event)
     payload = Payload('JIRA', e)
     url = CONFIG["discordWarningWebhookUrl"] if not e.is_handled() else CONFIG["discordWebhookUrl"]
+
+    if e.is_ignored():
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 200,
+            "headers": {"headerName": "headerValue"},
+            "body": {"ignored"}
+        }
 
     r = http.request(
         'POST',

@@ -14,5 +14,7 @@ CONFIG = {
                       'Issue Status Changed',
                       'Comment Created',
                       'Comment Updated',
-                      'Comment Deleted']
+                      'Comment Deleted'],
+    # These are events I'm just not going to handle
+    'ignoredEvents': ['Issue Property Set']
 }

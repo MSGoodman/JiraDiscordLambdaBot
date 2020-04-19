@@ -32,6 +32,9 @@ class JiraEvent:
     def is_handled(self):
         return self.event_name in CONFIG["handledEvents"]
 
+    def is_ignored(self):
+        return self.event_name in CONFIG["ignoredEvents"]
+
     def get_actor(self):
         if self.user:
             return self.user
